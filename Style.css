@@ -1,4 +1,4 @@
-/* * {
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -150,7 +150,7 @@ li button:active {
     transform: scale(0.95);
 }
 
-/* Mobile responsiveness 
+/* Mobile responsiveness */
 @media (max-width: 500px) {
     .container {
         padding: 20px 15px;
@@ -190,4 +190,4 @@ li button:active {
     .container {
         padding: 15px 12px;
     }
-} */
+}
