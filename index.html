@@ -2,21 +2,28 @@
 <html>
 <head>
     <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1a2e">
     <title>Life Schedule</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>My Life Schedule</h2>
+    <div class="container">
+        <header>
+            <h1>📅 My Life Schedule</h1>
+            <p class="subtitle">Stay organized</p>
+        </header>
 
-    <input type="time" id="time">
-    <input type="text" id="task" placeholder="Task">
+        <div class="input-section">
+            <input type="time" id="time" class="time-input">
+            <input type="text" id="task" placeholder="What's next?" class="task-input">
+            <button onclick="addTask()" class="add-btn">Add Task</button>
+        </div>
 
-    <button onclick="addTask()">Add</button>
-
-    <ul id="list"></ul>
+        <ul id="list" class="task-list"></ul>
+    </div>
 
     <script src="app.js"></script>
-
 </body>
 </html>
