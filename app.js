@@ -51,6 +51,16 @@ function deleteTask(index){
     displayTasks();
 }
 
+// Hide splash screen after animation
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        const splashScreen = document.getElementById('splashScreen');
+        if (splashScreen) {
+            splashScreen.style.display = 'none';
+        }
+    }, 3000);
+});
+
 // Check for daily reset on page load
 checkAndResetDaily();
 displayTasks();
