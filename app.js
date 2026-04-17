@@ -143,11 +143,11 @@ const GAP_MINS = 30; // enforced gap between tasks
  * Build a schedule from the current state.
  * Returns an array of blocks:
  *   { type: 'task'|'gap'|'free', label, start, end, durationMins }
+ * Tasks are spread evenly across the day with equal spacing.
  */
 function buildSchedule() {
   const dayStart  = timeToMins(dayStartInput.value);
   const dayEnd    = timeToMins(dayEndInput.value);
-  const startFrom = timeToMins(startFromInput.value);
 
   // Validate
   if (dayEnd <= dayStart) {
@@ -155,19 +155,11 @@ function buildSchedule() {
     return null;
   }
 
-  // Clamp startFrom to day window
-  const scheduleStart = Math.max(startFrom, dayStart);
-
-  if (scheduleStart >= dayEnd) {
-    showToast('"Schedule From" time is after day end.', 'error');
-    return null;
-  }
-
   // Calculate total time needed
   const totalTaskMins = state.tasks.reduce((s, t) => s + t.durationMins, 0);
   const totalGaps     = state.tasks.length > 1 ? (state.tasks.length - 1) * GAP_MINS : 0;
   const totalNeeded   = totalTaskMins + totalGaps;
-  const available     = dayEnd - scheduleStart;
+  const available     = dayEnd - dayStart;
 
   if (totalNeeded > available) {
     const overBy = totalNeeded - available;
@@ -178,22 +170,32 @@ function buildSchedule() {
     return null;
   }
 
-  // Build blocks: pack tasks from scheduleStart with 30-min gaps
-  const blocks = [];
-  let cursor = scheduleStart;
+  // Calculate free time to distribute evenly
+  const remainingFree = available - totalNeeded;
+  const numIntervals = state.tasks.length + 1; // free time slots before, between, and after tasks
+  const freePerInterval = Math.floor(remainingFree / numIntervals);
+  const extraMinutes = remainingFree % numIntervals; // distribute leftover minutes
 
-  // If scheduleStart > dayStart, there's free time at the start
-  if (scheduleStart > dayStart) {
-    blocks.push({
-      type: 'free',
-      label: 'Free Time',
-      start: dayStart,
-      end: scheduleStart,
-      durationMins: scheduleStart - dayStart,
-    });
-  }
+  // Build blocks: spread tasks evenly across the day
+  const blocks = [];
+  let cursor = dayStart;
 
   state.tasks.forEach((task, i) => {
+    // Add free time slot before this task
+    let freeSlot = freePerInterval;
+    if (i === 0) freeSlot += extraMinutes; // put extra minutes at the start
+    
+    if (freeSlot > 0) {
+      blocks.push({
+        type: 'free',
+        label: 'Free Time',
+        start: cursor,
+        end: cursor + freeSlot,
+        durationMins: freeSlot,
+      });
+      cursor += freeSlot;
+    }
+
     // Task block
     blocks.push({
       type: 'task',
@@ -217,14 +219,15 @@ function buildSchedule() {
     }
   });
 
-  // Remaining time after last task = free time
-  if (cursor < dayEnd) {
+  // Free time after last task
+  const lastFreeSlot = dayEnd - cursor;
+  if (lastFreeSlot > 0) {
     blocks.push({
       type: 'free',
       label: 'Free Time',
       start: cursor,
       end: dayEnd,
-      durationMins: dayEnd - cursor,
+      durationMins: lastFreeSlot,
     });
   }
 

@@ -1,11 +1,8 @@
-/* ============================================================
-   DayFlow — CSS
-   Aesthetic: Industrial Editorial — dark, monospaced accents,
-   bold type, amber highlights, raw grid energy
-   ============================================================ */
-
-/* ── Reset & Variables ───────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+}
 
 :root {
   --bg:          #0e0e0e;
@@ -36,7 +33,9 @@
 }
 
 /* ── Base ────────────────────────────────────────────────── */
-html { font-size: 16px; }
+html { 
+  font-size: 16px; 
+}
 
 body {
   background: var(--bg);
@@ -265,9 +264,14 @@ select {
   transform: translateY(-1px);
 }
 
-.btn-add:active { transform: translateY(0); }
+.btn-add:active { 
+  transform: translateY(0); 
+}
 
-.btn-icon { font-size: 1.1rem; line-height: 1; }
+.btn-icon { 
+  font-size: 1.1rem; 
+  line-height: 1; 
+}
 
 .btn-generate {
   width: 100%;
@@ -298,11 +302,22 @@ select {
   transition: transform 0.3s ease;
 }
 
-.btn-generate:hover::before { transform: translateX(0); }
-.btn-generate:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,166,35,0.3); }
-.btn-generate:active { transform: translateY(0); }
+.btn-generate:hover::before { 
+  transform: translateX(0); 
+}
 
-.btn-arrow { font-size: 1.3rem; }
+.btn-generate:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 24px rgba(245,166,35,0.3);
+}
+
+.btn-generate:active { 
+  transform: translateY(0); 
+}
+
+.btn-arrow { 
+  font-size: 1.3rem; 
+}
 
 .btn-reset {
   background: transparent;
@@ -318,7 +333,10 @@ select {
   letter-spacing: 0.05em;
 }
 
-.btn-reset:hover { border-color: var(--amber); color: var(--amber); }
+.btn-reset:hover { 
+  border-color: var(--amber); 
+  color: var(--amber); 
+}
 
 /* ── Task List (Queue) ───────────────────────────────────── */
 .task-list {
@@ -331,9 +349,17 @@ select {
   padding-right: 4px;
 }
 
-.task-list::-webkit-scrollbar { width: 4px; }
-.task-list::-webkit-scrollbar-track { background: transparent; }
-.task-list::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 2px; }
+.task-list::-webkit-scrollbar { 
+  width: 4px; 
+}
+
+.task-list::-webkit-scrollbar-track { 
+  background: transparent; 
+}
+.task-list::-webkit-scrollbar-thumb { 
+  background: var(--border-hi); 
+  border-radius: 2px; 
+}
 
 .task-empty {
   color: var(--text-muted);
@@ -387,7 +413,9 @@ select {
   margin-left: 8px;
 }
 
-.task-item-remove:hover { color: var(--red); }
+.task-item-remove:hover { 
+  color: var(--red); 
+}
 
 .badge {
   display: inline-flex;
@@ -447,8 +475,14 @@ select {
 }
 
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(12px); 
+  }
+  to   { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 }
 
 .schedule-header {
