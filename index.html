@@ -1,32 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <link rel="manifest" href="manifest.json">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#1a1a2e">
-    <title>Life Schedule</title>
-    <link rel="stylesheet" href="look.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DayFlow — Smart Day Planner</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
 </head>
 <body>
-    <audio id="alarmSound" src="alarm.mp3"></audio>
-    <div class="splash-screen" id="splashScreen">
-        <img src="icon.png" alt="Life Schedule" class="splash-icon">
-    </div>
-    <div class="container">
-        <header>
-            <h1>📅 My Life Schedule</h1>
-            <p class="subtitle">Get Life In Order</p>
-        </header>
+  <div class="noise"></div>
 
-        <div class="input-section">
-            <input type="time" id="time" class="time-input">
-            <input type="text" id="task" placeholder="What's next?" class="task-input">
-            <button onclick="addTask()" class="add-btn">Add Task</button>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-inner">
+        <div class="logo">
+          <span class="logo-mark">◈</span>
+          <span class="logo-text">DayFlow</span>
+        </div>
+        <p class="tagline">Stack your tasks. Protect your rest.</p>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+
+      <!-- Left Panel: Input -->
+      <section class="panel panel-input">
+
+        <!-- Day Config -->
+        <div class="card card-config">
+          <h2 class="card-title"><span class="card-num">01</span> Set Your Day</h2>
+          <div class="time-row">
+            <div class="field">
+              <label for="day-start">Day Starts</label>
+              <input type="time" id="day-start" value="08:00" />
+            </div>
+            <div class="divider-arrow">→</div>
+            <div class="field">
+              <label for="day-end">Day Ends</label>
+              <input type="time" id="day-end" value="22:00" />
+            </div>
+          </div>
+          <div class="field field-full">
+            <label for="start-from">Schedule From</label>
+            <input type="time" id="start-from" value="08:00" />
+            <span class="hint">Earliest time tasks can begin today</span>
+          </div>
         </div>
 
-        <ul id="list" class="task-list"></ul>
-    </div>
-    <script src="app.js"></script>
+        <!-- Add Task -->
+        <div class="card card-add">
+          <h2 class="card-title"><span class="card-num">02</span> Add a Task</h2>
+          <div class="field">
+            <label for="task-name">What do you need to do?</label>
+            <input type="text" id="task-name" placeholder="e.g. Gym session, Team meeting…" />
+          </div>
+          <div class="duration-row">
+            <div class="field">
+              <label for="task-hours">Hours</label>
+              <input type="number" id="task-hours" min="0" max="23" value="1" placeholder="0" />
+            </div>
+            <div class="field">
+              <label for="task-mins">Minutes</label>
+              <select id="task-mins">
+                <option value="0">0 min</option>
+                <option value="15">15 min</option>
+                <option value="30">30 min</option>
+                <option value="45">45 min</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-add" id="add-task-btn">
+            <span class="btn-icon">+</span> Add Task
+          </button>
+        </div>
+
+        <!-- Task Queue -->
+        <div class="card card-queue" id="queue-card">
+          <h2 class="card-title"><span class="card-num">03</span> Task Queue <span class="badge" id="task-count">0</span></h2>
+          <ul class="task-list" id="task-list">
+            <li class="task-empty">No tasks yet — add some above</li>
+          </ul>
+        </div>
+
+        <!-- Generate Button -->
+        <button class="btn-generate" id="generate-btn">
+          <span>Generate My Day</span>
+          <span class="btn-arrow">↗</span>
+        </button>
+
+      </section>
+
+      <!-- Right Panel: Schedule Output -->
+      <section class="panel panel-output" id="output-panel">
+        <div class="output-placeholder" id="output-placeholder">
+          <div class="placeholder-icon">◈</div>
+          <p>Your optimised schedule will appear here once you generate it.</p>
+        </div>
+
+        <div class="schedule-view" id="schedule-view" style="display:none;">
+          <div class="schedule-header">
+            <h2 class="schedule-title">Your Day</h2>
+            <div class="schedule-meta" id="schedule-meta"></div>
+          </div>
+          <div class="timeline" id="timeline"></div>
+          <div class="free-time-summary" id="free-time-summary"></div>
+          <button class="btn-reset" id="reset-btn">← Start Over</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
 </body>
 </html>
