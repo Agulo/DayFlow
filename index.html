@@ -43,7 +43,10 @@
             </div>
           </div>
           <div class="field field-full">
-            <label for="start-from">Schedule From</label>
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+              <label for="start-from">Schedule From</label>
+              <span id="current-time" style="font-size: 0.65rem; color: var(--amber); letter-spacing: 0.05em;">Now: 00:00</span>
+            </div>
             <input type="time" id="start-from" value="08:00" />
             <span class="hint">Earliest time tasks can begin today</span>
           </div>
@@ -115,6 +118,9 @@
 
   <!-- Toast -->
   <div class="toast" id="toast"></div>
+
+  <!-- Alarm Sound -->
+  <audio id="alarm-sound" src="alarm.mp3" preload="auto"></audio>
 
   <script src="app.js"></script>
 </body>

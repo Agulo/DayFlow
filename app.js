@@ -13,6 +13,12 @@ const state = {
   nextId: 1,
 };
 
+let alarmCheckInterval = null;
+const alarmSoundEl = document.getElementById('alarm-sound');
+const triggeredAlarms = new Set(); // track which task times already triggered alarms
+
+let currentTimeDisplay; // will be initialized after DOM loads
+
 // ── DOM Refs ─────────────────────────────────────────────────
 const taskNameInput   = document.getElementById('task-name');
 const taskHoursInput  = document.getElementById('task-hours');
@@ -58,6 +64,14 @@ function minsToHuman(mins) {
   return `${h}h ${m}m`;
 }
 
+/** Get current time in "HH:MM" format */
+function getCurrentTime() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  return `${h}:${m}`;
+}
+
 /** Show toast message */
 let toastTimer;
 function showToast(msg, type = '') {
@@ -68,6 +82,13 @@ function showToast(msg, type = '') {
   toastTimer = setTimeout(() => {
     toast.className = 'toast';
   }, 3000);
+}
+
+/** Update the current time display */
+function updateTimeDisplay() {
+  if (currentTimeDisplay) {
+    currentTimeDisplay.textContent = `Now: ${getCurrentTime()}`;
+  }
 }
 
 // ── Task Management ───────────────────────────────────────────
@@ -148,10 +169,27 @@ const GAP_MINS = 30; // enforced gap between tasks
 function buildSchedule() {
   const dayStart  = timeToMins(dayStartInput.value);
   const dayEnd    = timeToMins(dayEndInput.value);
+  let startFrom   = timeToMins(startFromInput.value);
+  
+  // Check if start-from time is in the past; if so, use current time
+  const currentMins = timeToMins(getCurrentTime());
+  if (startFrom < currentMins) {
+    startFrom = currentMins;
+    showToast(`Start time adjusted to current time (${getCurrentTime()})`, 'success');
+  }
 
   // Validate
   if (dayEnd <= dayStart) {
     showToast('Day end must be after day start.', 'error');
+    return null;
+  }
+  
+  if (startFrom < dayStart) {
+    startFrom = dayStart;
+  }
+  
+  if (startFrom >= dayEnd) {
+    showToast('Start time must be before end of day.', 'error');
     return null;
   }
 
@@ -159,7 +197,7 @@ function buildSchedule() {
   const totalTaskMins = state.tasks.reduce((s, t) => s + t.durationMins, 0);
   const totalGaps     = state.tasks.length > 1 ? (state.tasks.length - 1) * GAP_MINS : 0;
   const totalNeeded   = totalTaskMins + totalGaps;
-  const available     = dayEnd - dayStart;
+  const available     = dayEnd - startFrom;
 
   if (totalNeeded > available) {
     const overBy = totalNeeded - available;
@@ -178,7 +216,7 @@ function buildSchedule() {
 
   // Build blocks: spread tasks evenly across the day
   const blocks = [];
-  let cursor = dayStart;
+  let cursor = startFrom;
 
   state.tasks.forEach((task, i) => {
     // Add free time slot before this task
@@ -232,6 +270,43 @@ function buildSchedule() {
   }
 
   return blocks;
+}
+
+// ── Alarm Monitoring ────────────────────────────────────────────
+
+function playAlarm() {
+  alarmSoundEl.currentTime = 0;
+  alarmSoundEl.play().catch(err => console.log('Could not play alarm:', err));
+}
+
+function startAlarmMonitoring(blocks) {
+  // Clear any existing interval
+  if (alarmCheckInterval) clearInterval(alarmCheckInterval);
+  triggeredAlarms.clear();
+
+  // Check every 10 seconds if it's time for a task
+  alarmCheckInterval = setInterval(() => {
+    const now = new Date();
+    const currentMins = now.getHours() * 60 + now.getMinutes();
+
+    blocks.forEach(block => {
+      if (block.type === 'task' && !triggeredAlarms.has(block.start)) {
+        if (currentMins === block.start) {
+          triggeredAlarms.add(block.start);
+          playAlarm();
+          showToast(`Time for: ${block.label}`, 'success');
+        }
+      }
+    });
+  }, 10000); // Check every 10 seconds
+}
+
+function stopAlarmMonitoring() {
+  if (alarmCheckInterval) {
+    clearInterval(alarmCheckInterval);
+    alarmCheckInterval = null;
+  }
+  triggeredAlarms.clear();
 }
 
 // ── Render Schedule ───────────────────────────────────────────
@@ -297,6 +372,9 @@ function renderSchedule(blocks) {
     </div>
     <div class="fts-value">${minsToHuman(totalFree)}</div>
   `;
+
+  // Start monitoring for task alarms
+  startAlarmMonitoring(blocks);
 }
 
 // ── Generate Handler ──────────────────────────────────────────
@@ -321,6 +399,7 @@ function handleGenerate() {
 // ── Reset Handler ─────────────────────────────────────────────
 
 function handleReset() {
+  stopAlarmMonitoring();
   state.tasks = [];
   state.nextId = 1;
   renderTaskList();
@@ -356,4 +435,8 @@ taskListEl.addEventListener('click', e => {
 });
 
 // ── Init ──────────────────────────────────────────────────────
+currentTimeDisplay = document.getElementById('current-time');
+updateTimeDisplay();
+setInterval(updateTimeDisplay, 1000); // Update clock every second
+
 renderTaskList();
