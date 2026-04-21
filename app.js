@@ -22,7 +22,6 @@ const resetBtn        = document.getElementById('reset-btn');
 
 const dayStartInput   = document.getElementById('day-start');
 const dayEndInput     = document.getElementById('day-end');
-const startFromInput  = document.getElementById('start-from');
 
 const outputPlaceholder = document.getElementById('output-placeholder');
 const scheduleView      = document.getElementById('schedule-view');
@@ -160,14 +159,10 @@ const GAP_MINS = 30; // enforced gap between tasks
 function buildSchedule() {
   const dayStart  = timeToMins(dayStartInput.value);
   const dayEnd    = timeToMins(dayEndInput.value);
-  let startFrom   = timeToMins(startFromInput.value);
-  
-  // Check if start-from time is in the past; if so, use current time
   const currentMins = timeToMins(getCurrentTime());
-  if (startFrom < currentMins) {
-    startFrom = currentMins;
-    showToast(`Start time adjusted to current time (${getCurrentTime()})`, 'success');
-  }
+  
+  // Always schedule from the current time (or day start if we're before the day begins)
+  let startFrom = Math.max(currentMins, dayStart);
 
   // Validate
   if (dayEnd <= dayStart) {
@@ -398,17 +393,6 @@ function handleReset() {
   outputPlaceholder.style.display = 'flex';
   showToast('Schedule cleared.', '');
 }
-
-// ── Sync startFrom with dayStart ──────────────────────────────
-// When the user changes Day Start, auto-update "Schedule From" to match
-// unless the user has manually set it further ahead.
-dayStartInput.addEventListener('change', () => {
-  const dayStartMins   = timeToMins(dayStartInput.value);
-  const startFromMins  = timeToMins(startFromInput.value);
-  if (startFromMins < dayStartMins) {
-    startFromInput.value = dayStartInput.value;
-  }
-});
 
 // ── Event Listeners ───────────────────────────────────────────
 
