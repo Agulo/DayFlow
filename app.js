@@ -1,12 +1,3 @@
-/* ============================================================
-   DayFlow — app.js
-   Scheduling logic:
-   - Custom day window per day
-   - 30-min gaps between every task
-   - Tasks packed as early as possible from "start from" time
-   - Remaining time = free/rest blocks
-   ============================================================ */
-
 // ── State ────────────────────────────────────────────────────
 const state = {
   tasks: [],   // { id, name, durationMins }
